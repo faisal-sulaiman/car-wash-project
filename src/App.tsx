@@ -143,7 +143,7 @@ function App() {
 
   const sendInvoiceToWhatsApp = () => {
     if (!invoiceData) return;
-    const adminNumber = "03369659272"; // Replace with admin's WhatsApp number (country code + number, no +)
+    const adminNumber = "03479896180"; // Replace with admin's WhatsApp number (country code + number, no +)
     let message = `*AquaCarWash Invoice*\n\n`;
     message += `*Date:* ${invoiceData.timestamp}\n`;
     message += `*Vehicle:* ${invoiceData.vehicle}\n`;
