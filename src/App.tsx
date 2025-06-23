@@ -23,7 +23,7 @@ interface InvoiceData {
 }
 
 function App() {
-  const [currentView, setCurrentView] = useState<'home' | 'dashboard' | 'service' | 'invoice'>('home');
+  const [currentView, setCurrentView] = useState<'home' | 'dashboard' | 'service' | 'invoice' | 'login'>('home');
   const [selectedVehicle, setSelectedVehicle] = useState<string>('');
   const [vehiclePrices, setVehiclePrices] = useState<VehiclePrices>({
     bike: 150,
@@ -35,6 +35,9 @@ function App() {
   const [tempPrices, setTempPrices] = useState<VehiclePrices>(vehiclePrices);
   const [selectedServices, setSelectedServices] = useState<WashingService[]>([]);
   const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loginError, setLoginError] = useState('');
+  const [loginForm, setLoginForm] = useState({ username: '', password: '' });
 
   const vehicleTypes = [
     { key: 'bike', name: 'Bike', icon: Bike, color: 'bg-green-500' },
@@ -50,6 +53,28 @@ function App() {
     { id: 'diesel', name: 'Diesel Treatment', basePrice: 150 },
     { id: 'polish', name: 'Polish & Wax', basePrice: 300 }
   ];
+
+  const USERNAME = "admin";
+  const PASSWORD = "admin123";
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (
+      loginForm.username === USERNAME &&
+      loginForm.password === PASSWORD
+    ) {
+      setIsAuthenticated(true);
+      setLoginError('');
+      setCurrentView('dashboard');
+    } else {
+      setLoginError('Invalid username or password');
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setCurrentView('home');
+  };
 
   const handleVehicleSelect = (vehicleKey: string) => {
     setSelectedVehicle(vehicleKey);
@@ -140,7 +165,13 @@ function App() {
                 Home
               </button>
               <button
-                onClick={() => setCurrentView('dashboard')}
+                onClick={() => {
+                  if (isAuthenticated) {
+                    setCurrentView('dashboard');
+                  } else {
+                    setCurrentView('login');
+                  }
+                }}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 w-full sm:w-auto ${
                   currentView === 'dashboard' ? 'bg-blue-500 text-white' : 'text-gray-600 hover:bg-gray-100'
                 }`}
@@ -187,7 +218,7 @@ function App() {
         )}
 
         {/* Dashboard View */}
-        {currentView === 'dashboard' && (
+        {currentView === 'dashboard' && isAuthenticated && (
           <div className="space-y-8">
             <div className="text-center">
               <h2 className="text-4xl font-bold text-gray-900 mb-4">Price Management</h2>
@@ -232,6 +263,15 @@ function App() {
                   <span>Save Prices</span>
                 </button>
               </div>
+            </div>
+
+            <div className="flex justify-end mb-4">
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold"
+              >
+                Logout
+              </button>
             </div>
           </div>
         )}
@@ -386,6 +426,47 @@ function App() {
                 <span>New Order</span>
               </button>
             </div>
+          </div>
+        )}
+
+        {/* Login View */}
+        {currentView === 'login' && (
+          <div className="flex justify-center items-center min-h-[60vh]">
+            <form
+              onSubmit={handleLogin}
+              className="bg-white rounded-xl shadow-lg p-8 w-full max-w-sm space-y-6"
+            >
+              <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">Admin Login</h2>
+              {loginError && (
+                <div className="text-red-600 text-sm mb-2 text-center">{loginError}</div>
+              )}
+              <div>
+                <label className="block text-gray-700 mb-1">Username</label>
+                <input
+                  type="text"
+                  value={loginForm.username}
+                  onChange={e => setLoginForm({ ...loginForm, username: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700 mb-1">Password</label>
+                <input
+                  type="password"
+                  value={loginForm.password}
+                  onChange={e => setLoginForm({ ...loginForm, password: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg font-semibold"
+              >
+                Login
+              </button>
+            </form>
           </div>
         )}
       </main>
