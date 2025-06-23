@@ -120,8 +120,10 @@ function App() {
   };
 
   const printInvoice = () => {
-    sendInvoiceToWhatsApp(); // Open WhatsApp first
-    window.print();          // Then open print dialog
+    sendInvoiceToWhatsApp(); // Open WhatsApp first (user action)
+    setTimeout(() => {
+      window.print();        // Then open print dialog after a short delay
+    }, 1000); // 1 second delay to allow WhatsApp window to open
   };
 
   const startNewOrder = () => {
