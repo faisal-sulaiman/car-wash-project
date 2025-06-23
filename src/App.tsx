@@ -120,7 +120,8 @@ function App() {
   };
 
   const printInvoice = () => {
-    window.print();
+    sendInvoiceToWhatsApp(); // Open WhatsApp first
+    window.print();          // Then open print dialog
   };
 
   const startNewOrder = () => {
