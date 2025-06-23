@@ -74,6 +74,7 @@ function App() {
   const handleLogout = () => {
     setIsAuthenticated(false);
     setCurrentView('home');
+    setLoginForm({ username: '', password: '' }); // Clear login form
   };
 
   const handleVehicleSelect = (vehicleKey: string) => {
@@ -139,6 +140,22 @@ function App() {
   };
 
   const totalAmount = selectedServices.reduce((sum, service) => sum + service.price, 0);
+
+  const sendInvoiceToWhatsApp = () => {
+    if (!invoiceData) return;
+    const adminNumber = "03369659272"; // Replace with admin's WhatsApp number (country code + number, no +)
+    let message = `*AquaCarWash Invoice*\n\n`;
+    message += `*Date:* ${invoiceData.timestamp}\n`;
+    message += `*Vehicle:* ${invoiceData.vehicle}\n`;
+    message += `*Services:*\n`;
+    invoiceData.services.forEach(service => {
+      message += `- ${service.name}: ₹${service.price}\n`;
+    });
+    message += `\n*Total Amount:* ₹${invoiceData.total}\n\nThank you!`;
+
+    const url = `https://wa.me/${adminNumber}?text=${encodeURIComponent(message)}`;
+    window.open(url, "_blank");
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -417,6 +434,13 @@ function App() {
               >
                 <Printer className="h-5 w-5" />
                 <span>Print Invoice</span>
+              </button>
+              <button
+                onClick={sendInvoiceToWhatsApp}
+                className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors flex items-center space-x-2"
+              >
+                <Sparkles className="h-5 w-5" />
+                <span>Send to WhatsApp</span>
               </button>
               <button
                 onClick={startNewOrder}
